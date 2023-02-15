@@ -1,0 +1,429 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="title pb-20">
+        <h2 class="h3 mb-0">Gestionar Cursos</h2>
+    </div>
+    <div class="pd-20 card-box mb-30">
+        <div class="clearfix">
+            <div class="pull-left">
+                <h4 class="text-blue h4">Gestionar Cursos</h4>
+                <p class="mb-30"></p>
+            </div>
+        </div>
+   
+  
+
+            <div class="form-group row" style="float: right;">
+                <div class="col">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#formCurso">
+                    Agregar Curso
+                    </button>
+                </div>
+            </div>
+
+            
+            <div class="table-responsive">
+                <table class="table table-striped" id="id_table_curso">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="text-align: center;">Nombre</th>
+                            <th scope="col" style="text-align: center;">Fecha Inicio</th>
+                            <th scope="col" style="text-align: center;">Fecha Fin</th>
+                            <th scope="col" style="text-align: center;">Horario Inicio</th>
+                            <th scope="col" style="text-align: center;">Horario Fin</th>
+                            
+                            <th scope="col" style="text-align: center;"></th>
+                            <th scope="col" style="text-align: center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for curso in page %}
+                            <tr id="curso-{{curso.id}}">
+                                <td scope="row" style="text-align: center;" class="cursoNombre cursoNombreData"
+                                name="nombre"
+                                id ="nombre">
+                                    {{ curso.nombre }}
+                                </th>
+                                <td scope="row" style="text-align: center;" class="cursofechaInicio cursofechaInicioData"
+                                name="fechaInicio"
+                                id ="fechaInicio">
+                                    {{ curso.fechaInicio|date:"Y-m-d" }}
+                                </th>
+                                <td scope="row" style="text-align: center;" class="cursofechaFin cursofechaFinData"
+                                name="fechaFin"
+                                id ="fechaFin">
+                                    {{ curso.fechaFin|date:"Y-m-d" }}
+                                </th>
+                                <td scope="row" style="text-align: center;" class="cursohorarioInicio cursohorarioInicioData"
+                                name="horario_inicio"
+                                id ="horario_inicio">
+                                    {{ curso.horario_inicio|time:"h:i" }}
+                                </th>
+                                <td scope="row" style="text-align: center;" class="cursohorarioFin cursohorarioFinData"
+                                name="horario_fin"
+                                id ="horario_fin">
+                                    {{ curso.horario_fin|time:"h:i" }}
+                                </th>
+                            
+                                <td align="center">
+                                    <button class="btn btn-info" onClick="editCurso({{ curso.id }})" data-toggle="modal" data-target="#editar-curso"><i class="icon-copy bi bi-pencil-square"></i></button>
+                                </td>
+                                <td align="center">
+                                    <button class="btn btn-danger" onClick="deleteCurso({{ curso.id }})"><i class="icon-copy bi bi-trash3-fill"></i></button>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+   
+            {% if page.has_other_pages %}
+            <div class="col-lg-12"
+                 style="justify-content: center;
+                        align-items: center;
+                        display: flex;">
+                <div class="dataTables_paginate paging_simple_numbers"
+                     id="example2_paginate">
+                    <ul class="pagination">
+                        <li class="paginate_button page-item previous {% if not prev_url %} disabled{% endif %}">
+                            <a href="{{ prev_url }}"
+                               aria-disabled="true"
+                               tabindex="-1"
+                               class="page-link">Anterior</a>
+                        </li>
+                        {% for n in page.paginator.page_range %}
+                            {% if page.number == n %}
+                                <li class="paginate_button page-item active">
+                                    <a href="?page={{ n }}"
+                                       class="page-link">{{ n }}
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            {% elif n > page.number|add:-6 and n < page.number|add:6 %}
+                                <li class="paginate_button page-item active">
+                                    <a href="?page={{ n }}"
+                                       class="page-link">{{ n }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        <li class="paginate_button page-item {% if not next_url %} disabled{% endif %}">
+                            <a href="{{ next_url }}"
+                               class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+  <div class="modal fade" id="formCurso" tabindex="-1" role="dialog" aria-labelledby="formCursoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formCurso">Nuevo Curso</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="fnuevocurso" >
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="nombre_curso" class="col-form-label">Nombre:</label>
+              <input type="text" class="form-control" id="nombre_curso" name ="nombreC">
+            </div>
+            <div class="form-group">
+                <label for="fecha_inicio_curso" class="col-form-label">Fecha Inicio:</label>
+                <input type="date" class="form-control" id="fecha_inicio_curso" name="fechaI_curso">
+            </div>
+            <div class="form-group">
+              <label for="hora_inicio_curso" class="col-form-label">Hora Inicio:</label>
+              <input type="time" class="form-control" id="hora_inicio_curso" name="horaI_curso" value="00:00">
+            </div>
+            <div class="form-group">
+                <label for="fecha_fin_curso" class="col-form-label">Fecha Fin:</label>
+                <input type="date" class="form-control" id="fecha_fin_curso" name="fechaF_curso">
+            </div>
+            <div class="form-group">
+                <label for="hora_fin_curso" class="col-form-label">Hora Fin:</label>
+                <input type="time" class="form-control" id="hora_fin_curso" name="horaF_curso" value="00:00">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Registrar</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+
+    <!--- MODAL EDITAR CURSO -->
+    <div class="modal fade"
+    id="editar-curso"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">
+                        Editar Curso
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <form id="updateCurso" action="">
+               <div class="modal-body">
+                    <input class="form-control" id="form-id" type="hidden" name="formId"/>
+                  <div class="form-group">
+                    <label for="nombre_curso" class="col-form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="id_nombre_curso_edit" 
+                    name ="nombre_curso_edit">
+                  </div>
+                  <div class="form-group">
+                      <label for="fecha_inicio_curso" class="col-form-label">Fecha Inicio:</label>
+                      <input type="date" class="form-control" id="id_fecha_inicio_curso_edit" name="fecha_inicio_curso_edit">
+                  </div>
+                  <div class="form-group">
+                    <label for="hora_inicio_curso" class="col-form-label">Hora Inicio:</label>
+                    <input type="time" class="form-control" id="id_hora_inicio_curso_edit" name="hora_inicio_curso_edit" value="00:00">
+                  </div>
+                  <div class="form-group">
+                      <label for="fecha_fin_curso" class="col-form-label">Fecha Fin:</label>
+                      <input type="date" class="form-control" id="id_fecha_fin_curso_edit" name="fecha_fin_curso_edit">
+                  </div>
+                  <div class="form-group">
+                      <label for="hora_fin_curso" class="col-form-label">Hora Fin:</label>
+                      <input type="time" class="form-control" id="id_hora_fin_curso_edit" name="hora_fin_curso_edit" value="00:00">
+                    </div>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                       Cerrar
+                   </button>
+                   <button type="submit" class="btn btn-primary">
+                       <i class="fa fa-save"></i>
+                       Guardar
+                   </button>
+               </div>
+                </form>
+           </div>
+       </div>
+   </div>
+
+    <!--- MODAL ELIMINAR CURSO -->
+  <div class="modal fade"
+  id="elimiar-curso"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered" role="document">
+     <div class="modal-content">
+         <div class="modal-body text-center font-18">
+             <form id="form-delete-curso" action ="">
+                 <h4 class="padding-top-30 mb-30 weight-500">
+                     Estas seguro que quieres eliminar el Curso?
+                 </h4>
+                 <div class="padding-bottom-30 row"
+                      style="max-width: 170px; margin: 0 auto">
+                     <div class="col-6">
+                         <button type="button"
+                                 class="btn btn-secondary border-radius-100 btn-block confirmation-btn"
+                                 data-dismiss="modal">
+                             <i class="fa fa-times"></i>
+                         </button>
+                         NO
+                     </div>
+                     <div class="col-6">
+                         <button type="submit"
+                                 class="btn btn-primary border-radius-100 btn-block confirmation-btn">
+                             <i class="fa fa-check"></i>
+                         </button>
+                         SI
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
+</div>
+
+
+  <script>
+    // Create Django Ajax Call
+    $("form#fnuevocurso").submit(function() {
+        var id_nombre = $('input[name="nombreC"]').val().trim();
+        var id_fecha_inicio = $('input[name="fechaI_curso"]').val().trim();
+        var id_hora_inicio = $('input[name="horaI_curso"]').val().trim();
+        var id_fecha_fin = $('input[name="fechaF_curso"]').val().trim();
+        var id_hora_fin = $('input[name="horaF_curso"]').val().trim();
+
+       
+        if(id_nombre && id_fecha_inicio && id_hora_inicio && id_fecha_fin &&  id_hora_fin){
+            // Create Ajax Call
+            $.ajax({
+                url: '{% url 'crud_ajax_create_curso' %}',
+                data: {
+                    'id_nombre': id_nombre,
+                    'id_fecha_inicio': id_fecha_inicio,
+                    'id_hora_inicio': id_hora_inicio,
+                    'id_fecha_fin': id_fecha_fin,
+                    'id_hora_fin': id_hora_fin,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.cursos) {
+                        $('#succesTipo').html("Datos Registrados").show();  
+                        $("#succesTipo").delay(3000).hide(1);
+                        document.getElementById("nombre_curso").value = null;
+                        document.getElementById("fecha_inicio_curso").value = null;
+                        document.getElementById("hora_inicio_curso").value = null;
+                        document.getElementById("fecha_fin_curso").value = null;
+                        document.getElementById("hora_fin_curso").value = null;
+                        appendToCursosTable(data.cursos);
+                    }
+                }
+            });
+          } else {
+            alert("Debe ingresar los valores");
+        }
+        $('form#fnuevoestudiante').trigger("reset");
+        $('#formCurso').modal('hide');
+        return false;
+    });
+    function appendToCursosTable(cursos) {
+      $("#id_table_curso > tbody:last-child").append(`
+            <tr id="curso-${cursos.id}">
+                <td scope="row" style="text-align: center;" class="cursoNombre cursoNombreData"
+                name="nombre"
+                id ="nombre">${cursos.nombre}</td>
+                <td scope="row" style="text-align: center;" class="cursofechaInicio cursofechaInicioData"
+                name="fechaInicio"
+                id ="fechaInicio">${cursos.fechaInicio}</td>
+                <td scope="row" style="text-align: center;" class="cursofechaFin cursofechaFinData"
+                name="fechaFin"
+                id ="fechaFin">${cursos.fechaFin}</td>
+                <td scope="row" style="text-align: center;" class="cursohorarioInicio cursohorarioInicioData"
+                name="horario_inicio"
+                id ="horario_inicio">${cursos.horario_inicio}</td>
+                <td scope="row" style="text-align: center;" class="cursohorarioFin cursohorarioFinData"
+                name="horario_fin"
+                id ="horario_fin">${cursos.horario_fin}</td>
+                '<td align="center">
+                    <button class="btn btn-info" onClick="editCurso(${cursos.id})" data-toggle="modal" data-target="#editar-curso")"><i class="icon-copy bi bi-pencil-square"></i></button>
+                </td>
+                <td align="center">
+                    <button class="btn btn-danger" onClick="deleteCurso(${cursos.id})"><i class="icon-copy bi bi-trash3-fill"></i></button>
+                </td>
+            </tr>
+        `);
+    }
+</script>
+<script type="text/javascript">
+    $("form#updateCurso").submit(function() {
+        var idInput = $('input[name="formId"]').val().trim();
+        var id_nombre = $('input[name="nombre_curso_edit"]').val().trim();
+
+        var id_fecha_inicio = document.getElementById("id_fecha_inicio_curso_edit").value;
+        var id_horario_inicio = document.getElementById("id_hora_inicio_curso_edit").value;
+        var id_fecha_fin = document.getElementById("id_fecha_fin_curso_edit").value;
+        var id_horario_fin = document.getElementById("id_hora_fin_curso_edit").value;
+ 
+        console.log(idInput)
+        console.log(id_nombre)
+        console.log(id_fecha_inicio)
+        console.log(id_horario_inicio)
+        console.log(id_fecha_fin)
+        console.log(id_horario_fin)
+
+        if (idInput && id_nombre && id_fecha_inicio && id_horario_inicio && id_fecha_fin && id_horario_fin) {
+            // Update Ajax Call
+            console.log('ingreso')
+            $.ajax({
+                url: '{% url 'crud_ajax_update_curso' %}',
+                data: {
+                    'id': idInput,
+                    'id_nombre': id_nombre,
+                    'id_fecha_inicio': id_fecha_inicio,
+                    'id_horario_inicio': id_horario_inicio,
+                    'id_fecha_fin': id_fecha_fin,
+                    'id_horario_fin': id_horario_fin,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $("#id_table_curso #curso-" + data.cursos.id).remove(); 
+                    appendToCursosTable(data.cursos);
+                }
+            });
+            $('form#updateCurso').trigger("reset");
+            $('#editar-curso').modal('hide');
+           } else {
+            alert("Debe ingresar todos los valores");
+        }
+        
+        return false;
+    });
+
+</script>
+
+<script>
+    function editCurso(id) {
+        if (id) {
+          tr_id = "#curso-" + id;
+          nombre = $(tr_id).find(".cursoNombre").text().trim();
+          fechaInicio = $(tr_id).find(".cursofechaInicio").text().trim();
+          fechaFin = $(tr_id).find(".cursofechaFin").text().trim();
+          horarioInicio = $(tr_id).find(".cursohorarioInicio").text().trim();
+          horarioFin = $(tr_id).find(".cursohorarioFin").text().trim();
+          
+          console.log(tr_id)
+          console.log(fechaInicio)
+          console.log(fechaFin)
+          console.log(horarioInicio)
+          console.log(horarioFin)
+
+          $('#form-id').val(id);
+          $('#id_nombre_curso_edit').val(nombre);
+          $('#id_fecha_inicio_curso_edit').val(fechaInicio);
+          $('#id_hora_inicio_curso_edit').val(horarioInicio);
+          $('#id_fecha_fin_curso_edit').val(fechaFin);
+          $('#id_hora_fin_curso_edit').val(horarioFin);
+      
+        }
+      }
+</script>
+    <script>
+        function deleteCurso(id) {
+            $('#elimiar-curso').modal('show');
+
+            $(function() {
+                $("#form-delete-curso").on('submit',function(e){
+                    
+                    $("#elimiar-curso").modal("hide");
+                    e.preventDefault();
+                    console.log(id);
+                    //submit the form
+                    $.ajax({
+                        url: '{% url 'deleteCurso'  %}'  ,
+                        data: {
+                            'id': id,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            if (data.deleted) {
+                              $("#id_table_curso #curso-" + id).remove();
+                            }
+                        }
+                    });
+                });
+            });
+          }
+    </script>
+ 
+{% endblock content %}

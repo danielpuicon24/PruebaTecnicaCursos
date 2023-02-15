@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="pd-20 card-box mb-30">
+
+<div class="title pb-20">
+    <h2 class="h3 mb-0">Reportes del Colegio de Retos</h2>
+</div>
+
+<div class="clearfix">
+    <div class="pull-left">
+        <h4 class="text-blue h4">TOP 3 de Cursos con más estudiantes en los últimos 6 meses</h4>
+        <p class="mb-30"></p>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="id_table_inscripcion">
+        <thead>
+            <tr>
+                <th scope="col" style="text-align: center;">Cursos</th>
+                <th scope="col" style="text-align: center;">Cant. Matriculados</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cursostop %}
+                <tr id="inscripcion-{{c.id}}">
+                    <td scope="row" style="text-align: center;">
+                        {{ c.curso__nombre }}   
+                    </th>
+                    <td scope="row" style="text-align: center;">
+                        {{ c.num_estudiantes }}
+                    </th>
+                   
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="clearfix">
+    <div class="pull-left">
+        <h4 class="text-blue h4">Listado de Estudiantes y sus Cursos</h4>
+        <p class="mb-30"></p>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="id_table_inscripcion">
+        <thead>
+            <tr>
+                <th scope="col" style="text-align: center;">Estudiantes</th>
+                <th scope="col" style="text-align: center;">Nro. Cursos</th>
+
+                <th scope="col" style="text-align: center;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in estudiantes %}
+                <tr id="inscripcion-{{e.id}}">
+                    <td scope="row" style="text-align: center;">
+                        {{ e.estudiante__nombre }} {{ e.estudiante__apellido_paterno }} {{ e.estudiante__apellido_materno }}  
+                    </th>
+                    <td scope="row" style="text-align: center;">
+                        {{ e.num_cursos }} 
+                    </th>
+
+                    <td align="center">
+                        <button class="btn btn-success" onClick="location.href='{% url 'cursos' pk=e.estudiante_id %}'"><i class="icon-copy bi bi-pencil-square"></i></button>
+                    </td>
+                   
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+{% endblock %}

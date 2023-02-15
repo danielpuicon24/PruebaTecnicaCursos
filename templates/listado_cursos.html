@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="pd-20 card-box mb-30">
+
+<div class="title pb-20">
+    <h2 class="h3 mb-0">Reportes del Colegio de Retos</h2>
+</div>
+
+<div class="clearfix">
+    <div class="pull-left">
+        <h4 class="text-blue h4">Listado de Cursos del Estudiante: {{ estudiante.nombre}}</h4>
+        <p class="mb-30"></p>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="id_table_inscripcion">
+        <thead>
+            <tr>
+                <th scope="col" style="text-align: center;">Curso</th>
+                <th scope="col" style="text-align: center;">Fecha Inicio - Fecha Fin</th>
+                <th scope="col" style="text-align: center;">Horarios</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cursos %}
+                <tr id="inscripcion-{{c.id}}">
+                    <td scope="row" style="text-align: center;">
+                        {{ c.curso__nombre }}   
+                    </th>
+                    <td scope="row" style="text-align: center;">
+                        {{ c.curso__fechaInicio|date:"Y-m-d" }}   -   {{c.curso__fechaFin|date:"Y-m-d" }}
+                    </th>
+                    <td scope="row" style="text-align: center;">
+                        {{ c.curso__horario_inicio|time:"h:i a" }}   -   {{ c.curso__horario_fin|time:"h:i a" }}
+                    </th>
+                   
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+</div>
+{% endblock %}

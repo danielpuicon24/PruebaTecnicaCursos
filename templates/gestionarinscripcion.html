@@ -1,0 +1,241 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="title pb-20">
+        <h2 class="h3 mb-0">Gestionar Inscripciones</h2>
+    </div>
+
+    {% for message in messages %}
+    <div class="toast notification bg-{% if message.tags == 'error' %}danger{% else %}{{message.tags}}{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" style="margin-right: auto; margin-left: auto">
+      <div class="toast-header" >
+        <strong class="mr-auto">
+          {% if message.tags == 'error' %}
+            <i class="fas fa-times mr-2"></i>
+          {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation mr-2"></i>
+          {% elif message.tags == 'info' %}
+            <i class="fas fa-info mr-2"></i>
+          {% elif message.tags == 'success' %}
+            <i class="fas fa-check mr-2"></i>
+          {% endif %}
+          {{message.tags|capfirst}}
+        </strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="toast-body">
+        {{message|safe}}
+      </div>
+    </div>
+  {% endfor %}
+  
+    <div class="pd-20 card-box mb-30">
+        <div class="clearfix">
+            <div class="pull-left">
+                <h4 class="text-blue h4">Gestionar Inscripciones</h4>
+                <p class="mb-30"></p>
+            </div>
+        </div>
+
+        
+    
+            <div class="form-group row" style="float: right;">
+                <div class="col">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#formInscripcion">
+                        Agregar Nueva Inscripcion
+                      </button>
+                </div>
+            </div>
+           
+            <div class="table-responsive">
+                <table class="table table-striped" id="id_table_inscripcion">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="text-align: center;">Estudiante</th>
+                            <th scope="col" style="text-align: center;">Curso Registrado</th>
+                            
+                            <th scope="col" style="text-align: center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscripcion in page %}
+                            <tr id="inscripcion-{{inscripcion.id}}">
+                                <td scope="row" style="text-align: center;">
+                                    {{ inscripcion.estudiante.nombre }} {{ inscripcion.estudiante.apellido_paterno }}  {{ inscripcion.estudiante.apellido_materno }}  
+                                </th>
+                                <td scope="row" style="text-align: center;">
+                                    {{ inscripcion.curso }}
+                                </th>
+                               
+                                <td scope="row">
+                                    <button type="button"
+                                            class="btn btn-danger btn-lg"
+                                            data-toggle="modal"
+                                            onClick="deleteInscripcion({{ inscripcion.id }})">
+                                        <i class="icon-copy bi bi-trash3-fill"></i>
+                                    </button>
+                                 
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% if page.has_other_pages %}
+            <div class="col-lg-12"
+                 style="justify-content: center;
+                        align-items: center;
+                        display: flex;">
+                <div class="dataTables_paginate paging_simple_numbers"
+                     id="example2_paginate">
+                    <ul class="pagination">
+                        <li class="paginate_button page-item previous {% if not prev_url %} disabled{% endif %}">
+                            <a href="{{ prev_url }}"
+                               aria-disabled="true"
+                               tabindex="-1"
+                               class="page-link">Anterior</a>
+                        </li>
+                        {% for n in page.paginator.page_range %}
+                            {% if page.number == n %}
+                                <li class="paginate_button page-item active">
+                                    <a href="?page={{ n }}"
+                                       class="page-link">{{ n }}
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            {% elif n > page.number|add:-6 and n < page.number|add:6 %}
+                                <li class="paginate_button page-item active">
+                                    <a href="?page={{ n }}"
+                                       class="page-link">{{ n }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        <li class="paginate_button page-item {% if not next_url %} disabled{% endif %}">
+                            <a href="{{ next_url }}"
+                               class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+  <div class="modal fade" id="formInscripcion" tabindex="-1" role="dialog" aria-labelledby="formCursoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formInscripcion">Nueva Inscripcion</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="fnuevaInscripcion" name="fnuevaInscripcion" action ="{% url 'registrarInscripcion' %}"
+        method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-body">
+            <div class="form-group">
+              <label for="estudiante" class="col-form-label">Estudiante:</label>
+              <select class="custom-select" id="id_estudiante" name="estudianteid" >
+                <option selected="" value="0">
+                    Selecciona el Estudiante
+                </option>
+                {% for e in estudiantes  %}
+                    <option value="{{ e.id }}">
+                        {{ e.apellido_paterno }} {{ e.apellido_materno }}, {{ e.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+            </div>
+            <div class="form-group">
+                <label for="curso" class="col-form-label">Curso:</label>
+                <select class="custom-select" id="id_curso" name="cursoid" >
+                    <option selected="" value="0">
+                        Selecciona el Curso
+                    </option>
+                    {% for c in cursos  %}
+                        <option value="{{ c.id }}">
+                            {{ c.nombre }}, {{ e.horario_inicio }} - {{ e.horario_fin }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Registrar</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+
+     <!--- MODAL ELIMINAR INSCRIPCION -->
+  <div class="modal fade"
+  id="elimiar-inscripcion"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered" role="document">
+     <div class="modal-content">
+         <div class="modal-body text-center font-18">
+             <form id="form-delete-inscripcion" action ="">
+                 <h4 class="padding-top-30 mb-30 weight-500">
+                     Estas seguro que quieres eliminar la Inscripcion?
+                 </h4>
+                 <div class="padding-bottom-30 row"
+                      style="max-width: 170px; margin: 0 auto">
+                     <div class="col-6">
+                         <button type="button"
+                                 class="btn btn-secondary border-radius-100 btn-block confirmation-btn"
+                                 data-dismiss="modal">
+                             <i class="fa fa-times"></i>
+                         </button>
+                         NO
+                     </div>
+                     <div class="col-6">
+                         <button type="submit"
+                                 class="btn btn-primary border-radius-100 btn-block confirmation-btn">
+                             <i class="fa fa-check"></i>
+                         </button>
+                         SI
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
+</div>
+
+
+    <script>
+        function deleteInscripcion(id) {
+            $('#elimiar-inscripcion').modal('show');
+
+            $(function() {
+                $("#form-delete-inscripcion").on('submit',function(e){
+                    
+                    $("#elimiar-inscripcion").modal("hide");
+                    e.preventDefault();
+                    
+                    //submit the form
+                    $.ajax({
+                        url: '{% url 'deleteInscripcion'  %}'  ,
+                        data: {
+                            'id': id,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            if (data.deleted) {
+                              $("#id_table_inscripcion #inscripcion-" + id).remove();
+                            }
+                        }
+                    });
+                });
+            });
+          }
+    </script>
+{% endblock content %}

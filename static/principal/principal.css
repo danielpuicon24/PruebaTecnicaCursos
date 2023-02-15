@@ -1,0 +1,24 @@
+span.bigcheck {
+    font-family: sans-serif;
+ font-weight: 500;
+ font-size: 2em;
+ display: inline-block;
+ height: 36px;
+}
+
+span.bigcheck-target {
+font-family: FontAwesome; /* Use an icon font for the checkbox */
+}
+
+input[type='checkbox'].bigcheck {
+position: relative;
+left: -999em; /* Hide the real checkbox */
+}
+
+input[type='checkbox'].bigcheck + span.bigcheck-target:after {
+content: "\f096"; /* In fontawesome, is an open square (fa-square-o) */
+}
+
+input[type='checkbox'].bigcheck:checked + span.bigcheck-target:after {
+content: "\f046"; /* fontawesome checked box (fa-check-square-o) */
+}

@@ -1,0 +1,287 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+{% if user.is_authenticated %}
+    <div class="min-height-200px">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="title">
+                        <h4>Perfil</h4>
+                    </div>
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'index' %}">Inicio</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Perfil</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
+                <div class="pd-20 card-box height-100-p">
+                    <div class="profile-photo">
+                    
+                        <img
+                            src="{% static 'vendors/images/user.svg' %}"
+                            alt=""
+                            class="avatar-photo"
+                        />
+                    </div>
+                    <h5 class="text-center h5 mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p class="text-center text-muted font-14">Datos Personales</p>
+                    <div class="profile-info">
+                        <h5 class="mb-20 h5 text-blue">Información del Contacto</h5>
+                        <ul>
+                            <li>
+                                <span>Correo Electronico:</span>
+                                {{ user.email }}
+                            </li>
+                            <li>
+                                <span>Pais:</span>
+                                Lima, Peru
+                            </li>
+                            <li>
+                                <span>Direccion:</span>
+                                Calle Lima 587, Chincha Alta
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mb-30">
+                <div class="card-box height-100-p overflow-hidden">
+                    <div class="profile-tab height-100-p">
+                        <div class="tab height-100-p">
+                            <ul class="nav nav-tabs customtab" role="tablist">
+                                <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#profile" role="tab">Datos Personales</a
+                                >
+                            </li>
+                            <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#password" role="tab">Cambiar Contraseña</a
+                            >
+                        </li>
+                    </ul>
+
+                    
+
+                    <div class="tab-content">
+                        <!-- Timeline Tab start -->
+                     
+                        <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                            <div class="profile-setting">
+                                <form >
+                                    <ul class="profile-edit-list row">
+                                        <li class="weight-500 col-md-12">
+                                            <div id="succesInformation"
+                                            style="display: none;"
+                                            class="alert alert-success alert-dismissible fade show text-center"
+                                            role="alert">
+                                           <strong><span id="error1"></span></strong>
+                                           <span id="error2"></span>
+                                           <button id="hide_msg" type="button" class="close"  aria-label="Close">
+                                               <span aria-hidden="true">&times;</span>
+                                           </button>
+                                       </div>
+                                       <div id="errorInformation"
+                                            style="display: none;"
+                                            class="alert alert-warning alert-dismissible fade show text-center"
+                                            role="alert">
+                                           <strong><span id="error1"></span></strong>
+                                           <span id="error2"></span>
+                                           <button id="hide_msg" type="button" class="close"  aria-label="Close">
+                                               <span aria-hidden="true">&times;</span>
+                                           </button>
+                                       </div>
+
+                                            <h4 class="text-blue h5 mb-20">Editar tus Datos Personales</h4>
+                                            <div class="form-group">
+                                                <label>Nombres</label>
+                                                
+                                                <input class="form-control form-control-lg" type="text" 
+                                                id="id_nombres_editar" name="nombres_editar" value="{{ user.first_name }}" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Apellidos</label>
+                                                <input class="form-control form-control-lg" type="text" 
+                                                id="id_apellidos_editar" name="apellidos_editar" value="{{ user.last_name }}" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Correo</label>
+                                                <input class="form-control form-control-lg" type="email" 
+                                                id="id_correo_editar" name="correo_editar" value="{{ user.email }}"/>
+                                            </div>
+                                            <div class="form-group mb-0">
+                                                <button type="button" 
+                                                class="btn btn-primary btn-lg btn-block" 
+                                                onclick="UpdateProfileUser()"
+                                                ata-bgcolor="#1da1f2" data-color="#ffffff"> Actualizar Informacion
+                                                <i class="fa fa-save"></i>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    
+                                    </ul>
+                                </form>
+                            </div>
+                        </div>
+            
+                        <!-- Timeline Tab End -->
+                        <!-- Tasks Tab start -->
+                        <div class="tab-pane fade" id="password" role="tabpanel">
+                            <div class="profile-setting">
+                                <form>
+                                    <ul class="profile-edit-list row">
+                                        <li class="weight-500 col-md-12">
+                                            <div id="succesPassword"
+                                            style="display: none;"
+                                            class="alert alert-success alert-dismissible fade show text-center"
+                                            role="alert">
+                                           <strong><span id="error1"></span></strong>
+                                           <span id="error2"></span>
+                                           <button id="hide_msg" type="button" class="close"  aria-label="Close">
+                                               <span aria-hidden="true">&times;</span>
+                                           </button>
+                                       </div>
+                                       <div id="errorPassword"
+                                            style="display: none;"
+                                            class="alert alert-warning alert-dismissible fade show text-center"
+                                            role="alert">
+                                           <strong><span id="error1"></span></strong>
+                                           <span id="error2"></span>
+                                           <button id="hide_msg" type="button" class="close"  aria-label="Close">
+                                               <span aria-hidden="true">&times;</span>
+                                           </button>
+                                       </div>
+                                            <h4 class="text-blue h5 mb-20">Editar Contraseña</h4>
+                                            <div class="form-group">
+                                                <label>Contraseña Antigua</label>
+                                                <input class="form-control form-control-lg" type="password" 
+                                                id="id_password_original" name="password_original" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Contraseña Nueva</label>
+                                                <input class="form-control form-control-lg" type="password"
+                                                id="id_password_1" name="password_1" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Repetir Contraseña Nueva</label>
+                                                <input class="form-control form-control-lg" type="password" 
+                                                id="id_password_2" name="password_2" />
+                                            </div>
+                                    
+                                            <div class="form-group mb-0">
+                                                <button type="button" 
+                                                class="btn btn-primary btn-lg btn-block"
+                                                ata-bgcolor="#1da1f2"
+                                                onclick="UpdatePasswordUser()" 
+                                                data-color="#ffffff"> Actualizar Contraseña
+                                                <i class="fa fa-save"></i>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    
+                                    </ul>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- add task popup End -->
+                </div>
+            </div>
+        </div>
+        <!-- Tasks Tab End -->
+        <!-- Setting Tab start -->
+        <!-- Setting Tab End -->
+    </div>
+{% endif %}
+
+<script>
+    // Create Django Ajax Call
+    function UpdateProfileUser(){
+        var nombres = $('input[name="nombres_editar"]').val().trim();
+        var apellidos = $('input[name="apellidos_editar"]').val().trim();
+        var correo = $('input[name="correo_editar"]').val().trim();
+
+         if (nombres && apellidos && correo) {
+            // Create Ajax Call
+            $.ajax({
+                url: '{% url 'crud_ajax_edit_auth_user' %}',
+                data: {
+                    'nombres': nombres,
+                    'apellidos': apellidos,
+                    'correo': correo,            
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if(data['message'] == "Success"){
+                        $('#succesInformation').html("Datos Registrados").show();  
+                        $("#succesInformation").delay(3000).hide(1);
+                        location.reload();
+                    }
+                    else if(data['message'] == "invalid"){
+                        $('#errorInformation').html("Error, hubo problemas").show();  
+                        $("#errorInformation").delay(3000).hide(1);
+                    }
+                }
+            });
+        } else {
+            alert("Debe ingresar los valores");
+        }
+    }
+</script>
+
+<script>
+    // Create Django Ajax Call
+    function UpdatePasswordUser(){
+        var password_original = $('input[name="password_original"]').val().trim();
+        var password_1 = $('input[name="password_1"]').val().trim();
+        var password_2 = $('input[name="password_2"]').val().trim();
+
+        if (password_original && password_1 && password_2 ) {
+            // Create Ajax Call
+            $.ajax({
+                url: '{% url 'crud_ajax_change_password_admin' %}',
+                data: {
+                    'password_original': password_original,
+                    'password_1': password_1,
+                    'password_2': password_2,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if(data['message'] == "Success"){
+                        $('#succesPassword').html("Contraseña Actualizada").show();  
+                        $("#succesPassword").delay(3000).hide(1);
+                        location.reload();
+                    }
+                    else if(data['message'] == "invalid"){
+                        $('#errorPassword').html("Error, hubo problemas").show();  
+                        $("#errorPassword").delay(3000).hide(1);
+                       
+                    }
+                    else if(data['message'] == "error"){
+                        $('#errorPassword').html("Error, las contraseñas no son iguales").show();  
+                        $("#errorPassword").delay(3000).hide(1);
+                        console.log("error de contraseñas")
+                     
+                    }
+                    else if(data['message'] == "passwordinvalid"){
+                        $('#errorPassword').html("Error, debes ingresar una contraseña valida").show();  
+                        $("#errorPassword").delay(3000).hide(1);
+                      
+                    }
+                
+                }
+            });
+        } else {
+            alert("Debe ingresar los valores");
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="title pb-20">
+        <h2 class="h3 mb-0">Gestionar Estudiantes</h2>
+    </div>
+    <div class="pd-20 card-box mb-30">
+        <div class="clearfix">
+            <div class="pull-left">
+                <h4 class="text-blue h4">Gestionar Estudiante</h4>
+                <p class="mb-30"></p>
+            </div>
+        </div>
+            
+        <div class="form-group row" style="float: right;">
+            <div class="col">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#formEstudiante">
+                    Agregar Estudiante
+                  </button>
+            </div>
+        </div>
+
+
+                <div class="table-responsive">
+                    <table class="table table-striped" id="id_table_estudiante">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center;">Nombre</th>
+                                <th scope="col" style="text-align: center;">Apellido P.</th>
+                                <th scope="col" style="text-align: center;">Apellido M.</th>
+                                <th scope="col" style="text-align: center;">Edad</th>
+                                <th scope="col" style="text-align: center;">Correo</th>
+                          
+                                <th scope="col" style="text-align: center;"></th>
+                                <th scope="col" style="text-align: center;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for estudiante in page %}
+                                <tr id="estudiante-{{estudiante.id}}">
+                                    <td scope="row" style="text-align: center;" 
+                                    class="estudianteNombre estudianteNombreData"
+                                    name="nombre"
+                                    id ="nombre">
+                                        {{ estudiante.nombre }}
+                                    </th>
+                                    <td scope="row" style="text-align: center;" class="estudianteApellidoP estudianteApellidoPData"
+                                    name="apellidoP"
+                                    id ="apellidoP">
+                                        {{ estudiante.apellido_paterno }}
+                                    </th>
+                                    <td scope="row" style="text-align: center;" class="estudianteApellidoM estudianteApellidoMData"
+                                    name="apellidoM"
+                                    id ="apellidoM">
+                                        {{ estudiante.apellido_materno }}
+                                    </th>
+                                    <td scope="row" style="text-align: center;" class="estudianteEdad estudianteEdadData"
+                                    name="edad"
+                                    id ="edad">
+                                        {{ estudiante.edad }}
+                                    </th>
+                                    <td scope="row" style="text-align: center;" 
+                                    class="estudianteEmail estudianteEmailData"
+                                    name="email"
+                                    id ="email">
+                                        {{ estudiante.email }}
+                                    </th>
+                                
+                                    <td align="center">
+                                        <button class="btn btn-info" onClick="editEstudiante({{ estudiante.id }})" data-toggle="modal" data-target="#editar-estudiante"><i class="icon-copy bi bi-pencil-square"></i></button>
+                                    </td>
+                                    <td align="center">
+                                        <button class="btn btn-danger" onClick="deleteEstudiante({{ estudiante.id }})"><i class="icon-copy bi bi-trash3-fill"></i></button>
+                                    </td>
+
+                        
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            
+        
+                {% if page.has_other_pages %}
+                <div class="col-lg-12"
+                     style="justify-content: center;
+                            align-items: center;
+                            display: flex;">
+                    <div class="dataTables_paginate paging_simple_numbers"
+                         id="example2_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button page-item previous {% if not prev_url %} disabled{% endif %}">
+                                <a href="{{ prev_url }}"
+                                   aria-disabled="true"
+                                   tabindex="-1"
+                                   class="page-link">Anterior</a>
+                            </li>
+                            {% for n in page.paginator.page_range %}
+                                {% if page.number == n %}
+                                    <li class="paginate_button page-item active">
+                                        <a href="?page={{ n }}"
+                                           class="page-link">{{ n }}
+                                            <span class="sr-only">(current)</span>
+                                        </a>
+                                    </li>
+                                {% elif n > page.number|add:-6 and n < page.number|add:6 %}
+                                    <li class="paginate_button page-item active">
+                                        <a href="?page={{ n }}"
+                                           class="page-link">{{ n }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            <li class="paginate_button page-item {% if not next_url %} disabled{% endif %}">
+                                <a href="{{ next_url }}"
+                                   class="page-link">Siguiente</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+    </div>
+
+    <!-- Modal Registrar Nuevo Estudiante-->
+  <div class="modal fade" id="formEstudiante" tabindex="-1" role="dialog" aria-labelledby="formEstudianteLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formEstudiante">Nuevo estudiante</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="fnuevoestudiante" action="">
+        <div class="modal-body">
+        
+            <input class="form-control" disabled type="hidden" id="id_estudiante" name="estudiante"/>
+            <div class="form-group">
+              <label for="nombre_estudiante" class="col-form-label">Nombre:</label>
+              <input type="text" class="form-control" id="nombre_estudiante" name ="name_student">
+            </div>
+            <div class="form-group">
+              <label for="apellido_paterno_estudiante" class="col-form-label">Apellido Paterno:</label>
+              <input type="text" class="form-control" id="apellido_paterno_estudiante" name="last_name_p_student">
+            </div>
+            <div class="form-group">
+                <label for="apellido_materno_estudiante" class="col-form-label">Apellido Materno:</label>
+                <input type="text" class="form-control" id="apellido_materno_estudiante" name="last_name_m_student">
+            </div>
+            <div class="form-group">
+                <label for="edad_estudiante" class="col-form-label">Edad:</label>
+                <input type="number" class="form-control" id="edad_estudiante" name="edadE">
+            </div>
+            <div class="form-group">
+                <label for="email_estudiante" class="col-form-label">Correo:</label>
+                <input type="email" class="form-control" id="email_estudiante" name="emailE">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Registrar</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+
+  <!--- MODAL EDITAR TIPO EXAMEN -->
+  <div class="modal fade"
+  id="editar-estudiante"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h4 class="modal-title" id="myLargeModalLabel">
+                 Editar Estudiante
+             </h4>
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                 ×
+             </button>
+         </div>
+         <form id="updateEstudiante" action="">
+             <div class="modal-body">
+                <input class="form-control" id="form-id" type="hidden" name="formId"/>
+                <input class="form-control" disabled type="hidden" id="id_estudiante" name="estudiante"/>
+                <div class="form-group">
+                  <label for="nombre_estudiante" class="col-form-label">Nombre:</label>
+                  <input type="text" class="form-control" id="id_nombre_estudiante_edit" name ="nombre_estudiante_edit">
+                    </div>
+                <div class="form-group">
+                    <label for="apellido_paterno_estudiante" class="col-form-label">Apellido Paterno:</label>
+                    <input type="text" class="form-control" id="id_apellido_paterno_estudiante_edit" name="apellido_paterno_estudiante_edit">
+                </div>
+                <div class="form-group">
+                    <label for="apellido_materno_estudiante" class="col-form-label">Apellido Materno:</label>
+                    <input type="text" class="form-control" id="id_apellido_materno_estudiante" name="apellido_materno_estudiante">
+                </div>
+                <div class="form-group">
+                    <label for="edad_estudiante" class="col-form-label">Edad:</label>
+                    <input type="number" class="form-control" id="id_edad_estudiante" name="edad_estudiante">
+                </div>
+                <div class="form-group">
+                    <label for="email_estudiante" class="col-form-label">Correo:</label>
+                    <input type="email" class="form-control" id="id_email_estudiante" name="email_estudiante">
+                </div>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     Cerrar
+                 </button>
+                 <button type="submit" class="btn btn-primary">
+                     <i class="fa fa-save"></i>
+                     Guardar
+                 </button>
+             </div>
+        </form>
+         </div>
+     </div>
+ </div>
+
+
+  <!--- MODAL ELIMINAR ESTUDIANTE -->
+  <div class="modal fade"
+  id="elimiar-estudiante"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered" role="document">
+     <div class="modal-content">
+         <div class="modal-body text-center font-18">
+             <form id="form-delete-estudiante" action ="">
+                 <h4 class="padding-top-30 mb-30 weight-500">
+                     Estas seguro que quieres eliminar el Estudiante?
+                 </h4>
+                 <div class="padding-bottom-30 row"
+                      style="max-width: 170px; margin: 0 auto">
+                     <div class="col-6">
+                         <button type="button"
+                                 class="btn btn-secondary border-radius-100 btn-block confirmation-btn"
+                                 data-dismiss="modal">
+                             <i class="fa fa-times"></i>
+                         </button>
+                         NO
+                     </div>
+                     <div class="col-6">
+                         <button type="submit"
+                                 class="btn btn-primary border-radius-100 btn-block confirmation-btn">
+                             <i class="fa fa-check"></i>
+                         </button>
+                         SI
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
+</div>
+
+
+<script>
+    // Create Django Ajax Call
+    $("form#fnuevoestudiante").submit(function() {
+        var id_nombre = $('input[name="name_student"]').val().trim();
+        var id_paterno = $('input[name="last_name_p_student"]').val().trim();
+        var id_materno = $('input[name="last_name_m_student"]').val().trim();
+        var id_edad = $('input[name="edadE"]').val().trim();
+        var id_correo = $('input[name="emailE"]').val().trim();
+       
+        if(id_nombre && id_paterno && id_materno && id_correo &&  id_edad){
+            // Create Ajax Call
+            $.ajax({
+                url: '{% url 'crud_ajax_create_estudiante' %}',
+                data: {
+                    'id_nombre': id_nombre,
+                    'id_paterno': id_paterno,
+                    'id_materno': id_materno,
+                    'id_correo': id_correo,
+                    'id_edad': id_edad,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.estudiantes) {
+                        $('#succesTipo').html("Datos Registrados").show();  
+                        $("#succesTipo").delay(3000).hide(1);
+                        document.getElementById("nombre_estudiante").value = null;
+                        document.getElementById("apellido_paterno_estudiante").value = null;
+                        document.getElementById("apellido_materno_estudiante").value = null;
+                        document.getElementById("edad_estudiante").value = null;
+                        document.getElementById("email_estudiante").value = null;
+                        appendToEstudiantesTable(data.estudiantes);
+                    }
+                }
+            });
+          } else {
+            alert("Debe ingresar los valores");
+        }
+        $('form#fnuevoestudiante').trigger("reset");
+        $('#formEstudiante').modal('hide');
+        return false;
+    });
+    function appendToEstudiantesTable(estudiantes) {
+      $("#id_table_estudiante > tbody:last-child").append(`
+            <tr id="estudiante-${estudiantes.id}">
+                <td scope="row" style="text-align: center;" class="estudianteNombre estudianteNombreData"
+                name="nombre"
+                id ="nombre">${estudiantes.nombre}</td>
+                <td scope="row" style="text-align: center;" class="estudianteApellidoP estudianteApellidoPData"
+                name="apellidoP"
+                id ="apellidoP">${estudiantes.apellido_paterno}</td>
+                <td scope="row" style="text-align: center;" class="estudianteApellidoM estudianteApellidoMData"
+                name="apellidoM"
+                id ="apellidoM">${estudiantes.apellido_materno}</td>
+                <td scope="row" style="text-align: center;" class="estudianteEdad estudianteEdadData"
+                name="edad"
+                id ="edad">${estudiantes.edad}</td>
+                <td scope="row" style="text-align: center;" class="estudianteEmail estudianteEmailData"
+                name="email"
+                id ="email">${estudiantes.email}</td>
+                '<td align="center">
+                    <button class="btn btn-info" onClick="editEstudiante(${estudiantes.id})" data-toggle="modal" data-target="#editar-estudiante")"><i class="icon-copy bi bi-pencil-square"></i></button>
+                </td>
+                <td align="center">
+                    <button class="btn btn-danger" onClick="deleteEstudiante(${estudiantes.id})"><i class="icon-copy bi bi-trash3-fill"></i></button>
+                </td>
+            </tr>
+        `);
+    }
+</script>
+<script type="text/javascript">
+    $("form#updateEstudiante").submit(function() {
+        var idInput = $('input[name="formId"]').val().trim();
+        var id_nombre = $('input[name="nombre_estudiante_edit"]').val().trim();
+        var id_paterno = $('input[name="apellido_paterno_estudiante_edit"]').val().trim();
+        var id_materno = $('input[name="apellido_materno_estudiante"]').val().trim();
+        var id_edad = $('input[name="edad_estudiante"]').val().trim();
+        var id_correo = $('input[name="email_estudiante"]').val().trim();
+
+        if (idInput && id_nombre && id_paterno && id_materno && id_edad && id_correo) {
+            // Update Ajax Call
+            $.ajax({
+                url: '{% url 'crud_ajax_update_estudiante' %}',
+                data: {
+                    'id': idInput,
+                    'id_nombre': id_nombre,
+                    'id_paterno': id_paterno,
+                    'id_materno': id_materno,
+                    'id_correo': id_correo,
+                    'id_edad': id_edad,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $("#id_table_estudiante #estudiante-" + data.estudiantes.id).remove(); 
+                    appendToEstudiantesTable(data.estudiantes);
+                }
+            });
+            $('form#updateEstudiante').trigger("reset");
+            $('#editar-estudiante').modal('hide');
+           } else {
+            alert("Debe ingresar todos los valores");
+        }
+        
+        return false;
+    });
+
+</script>
+
+<script>
+    function editEstudiante(id) {
+        if (id) {
+          tr_id = "#estudiante-" + id;
+          nombre = $(tr_id).find(".estudianteNombre").text().trim();
+          apellidoP = $(tr_id).find(".estudianteApellidoP").text().trim();
+          apellidoM = $(tr_id).find(".estudianteApellidoM").text().trim();
+          edad = $(tr_id).find(".estudianteEdad").text().trim();
+          email = $(tr_id).find(".estudianteEmail").text().trim();
+
+          $('#form-id').val(id);
+          $('#id_nombre_estudiante_edit').val(nombre);
+          $('#id_apellido_paterno_estudiante_edit').val(apellidoP);
+          $('#id_apellido_materno_estudiante').val(apellidoM);
+          $('#id_edad_estudiante').val(edad);
+          $('#id_email_estudiante').val(email);
+      
+        }
+      }
+</script>
+    <script>
+        function deleteEstudiante(id) {
+            $('#elimiar-estudiante').modal('show');
+
+            $(function() {
+                $("#form-delete-estudiante").on('submit',function(e){
+                    
+                    $("#elimiar-estudiante").modal("hide");
+                    e.preventDefault();
+                    console.log(id);
+                    //submit the form
+                    $.ajax({
+                        url: '{% url 'deleteStudent'  %}'  ,
+                        data: {
+                            'id': id,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            if (data.deleted) {
+                              $("#id_table_estudiante #estudiante-" + id).remove();
+                            }
+                        }
+                    });
+                });
+            });
+          }
+    </script>
+{% endblock content %}
